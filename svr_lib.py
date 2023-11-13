@@ -20,7 +20,7 @@ import time
 import json
 import sys
 
-SEASON = '7'
+SEASON = '8'
 API_LINK = 'http://terminal.c1games.com/api'
 
 def clean_content(content):
@@ -350,6 +350,41 @@ def get_match_str(mID):
     '''
     return 'https://terminal.c1games.com/watch/{}'.format(mID)
 
+def get_match_json(mID):
+    '''
+    Function to pull json of the game replay for either storage or local watching
+
+        Args:
+            * mID: The id number of the match
+
+        Returns:
+            List of dictionaries where one dictionary represents a move
+
+    '''
+
+    api_path = f'/game/replayexpanded/{mID}'
+    contents = get_page_content(api_path)
+
+    # return json.loads(contents[2:-2])
+
+    contents = contents.split("\\n")
+
+    debug = contents[1]
+
+    contents = contents[3:]
+
+    contents = [json.loads(move) for move in contents if move != ""]
+
+    contents = [move["turnInfo"] for move in contents]
+
+    with open("./text", 'w') as f:
+        f.write(str(contents))
+
+
+    # return contents
+
+    # return json.loads(str(contents))
+
 def get_matches_str(algo, in_leaderboard=False, verbose=False):
     '''
     Function to get all of an algo's matches in formatted strings.
@@ -368,4 +403,4 @@ def get_matches_str(algo, in_leaderboard=False, verbose=False):
     return [get_match_str(x) for x in matchIDs]
 
 if __name__ == '__main__':
-    pass
+    print(get_match_json(13114916))
